@@ -26,7 +26,4 @@ public class Producto {
     @Column (nullable = false)
     private String imagenUrl;
 
-    @OneToMany(mappedBy = "producto")
-    private List<DetalleCompra> detalles;
-
 }
