@@ -28,6 +28,6 @@ public class DetalleCompra {
     private Integer cantidad;
 
     @Column(nullable = false)
-    private Double subtotal;
+    private Double precioUnitario;
 
 }
