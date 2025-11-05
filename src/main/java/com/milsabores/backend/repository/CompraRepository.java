@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface CompraRepository extends JpaRepository<Compra, Long> {
-    List<DetalleCompra> getDetallesByCompraId(Long compraId);
+    List<DetalleCompra> getDetallesById(Long compra);
 }
