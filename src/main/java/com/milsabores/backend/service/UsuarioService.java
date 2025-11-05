@@ -41,5 +41,8 @@ public class UsuarioService {
                 .orElse(null);
     }
 
+    public Usuario login(String correo, String contrasena) {
+        return usuarioRepository.findByCorreoAndContrasena(correo, contrasena).orElse(null);
+    }
 
 }

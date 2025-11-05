@@ -5,7 +5,9 @@ import com.milsabores.backend.service.UsuarioService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -46,5 +48,17 @@ public class UsuarioController {
     public void deleteUsuario(@PathVariable Long id){
         usuarioService.deleteUsuario(id);
     }
+
+    @PostMapping("/login")
+    @ApiOperation(value = "Iniciar sesión de usuario")
+    public Usuario login(@RequestBody Usuario usuario) {
+        Usuario existingUser = usuarioService.login(usuario.getCorreo(), usuario.getContrasena());
+        if (existingUser != null) {
+            return existingUser;
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Correo o contraseña incorrectos");
+        }
+    }
+
 
 }
