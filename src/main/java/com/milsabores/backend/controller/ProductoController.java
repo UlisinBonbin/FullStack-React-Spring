@@ -33,7 +33,7 @@ public class ProductoController {
         return productoService.saveProducto(producto);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     @ApiOperation(value = "actualizar un producto ya exisitente")
     public Producto updateProducto(@PathVariable Long id, @RequestBody Producto producto){
         return productoService.updateProducto(id, producto);
@@ -41,7 +41,7 @@ public class ProductoController {
 
     @DeleteMapping("/{id}")
     @ApiOperation(value = "eliminar un producto")
-    public void deleteUsuario(@PathVariable Long id){
+    public void deleteProducto(@PathVariable Long id){
         productoService.deleteProducto(id);
     }
 }
