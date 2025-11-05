@@ -37,16 +37,8 @@ public class UsuarioController {
 
     @PutMapping("/{id}")
     @ApiOperation(value = "Actualizar un usuario existente")
-    public Usuario updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario){
-        Usuario existingUsuario = usuarioService.getUsuarioById(id);
-
-        if (existingUsuario!= null){
-            existingUsuario.setNombre(usuario.getNombre());
-            existingUsuario.setCorreo(usuario.getCorreo());
-            existingUsuario.setContrasena(usuario.getContrasena());
-            existingUsuario.setDireccion(usuario.getDireccion());
-        }
-        return null;
+    public Usuario updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
+        return usuarioService.updateUsuario(id, usuario);
     }
 
     @DeleteMapping("/{id}")
