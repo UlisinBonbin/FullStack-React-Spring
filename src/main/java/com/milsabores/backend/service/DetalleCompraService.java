@@ -12,6 +12,10 @@ public class DetalleCompraService {
     @Autowired
     DetalleCompraRepository detalleCompraRepository;
 
+    public List<DetalleCompra>getAllDetalleCompra(){
+        return detalleCompraRepository.findAll();
+    }
+
     public List<DetalleCompra> getDetallesByCompraId(Long compraId) {
         return detalleCompraRepository.findByCompra_Id(compraId);
     }
