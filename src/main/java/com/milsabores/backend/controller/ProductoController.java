@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/productos")
-@Tag(name = "Books", description = "Book Management System")
+@Tag(name = "Products Management System")
 public class ProductoController {
     @Autowired
     private ProductoService productoService;
