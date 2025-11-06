@@ -3,7 +3,7 @@ package com.milsabores.backend.controller;
 import com.milsabores.backend.model.DetalleCompra;
 import com.milsabores.backend.repository.DetalleCompraRepository;
 import com.milsabores.backend.service.DetalleCompraService;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,13 +19,13 @@ public class DetalleCompraController {
     private DetalleCompraService detalleCompraService;
 
     @GetMapping
-    @ApiOperation(value = "lista de todas las compras", response = List.class)
+    @Operation(summary = "lista de todas las compras")
     public List<DetalleCompra> getAllDetalleCompra(){
         return detalleCompraService.getAllDetalleCompra();
     }
 
     @GetMapping("/compra/{id}")
-    @ApiOperation(value = "Obtener los detalles de una compra por su id")
+    @Operation(summary = "Obtener los detalles de una compra por su id")
     public List<DetalleCompra> getDetallesByCompraId(@PathVariable Long id) {
         return detalleCompraService.getDetallesByCompraId(id);
     }
