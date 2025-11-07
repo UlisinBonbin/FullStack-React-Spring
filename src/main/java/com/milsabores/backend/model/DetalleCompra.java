@@ -1,5 +1,6 @@
 package com.milsabores.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +10,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class DetalleCompra {
 
     @Id
@@ -18,6 +18,7 @@ public class DetalleCompra {
 
     @ManyToOne
     @JoinColumn(name = "compra_id", nullable = false)
+    @JsonBackReference // ✅ Rompe la recursión de JSON
     private Compra compra;
 
     @ManyToOne
@@ -29,5 +30,4 @@ public class DetalleCompra {
 
     @Column(nullable = false)
     private Double precioUnitario;
-
 }

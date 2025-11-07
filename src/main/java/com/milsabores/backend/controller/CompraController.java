@@ -1,5 +1,6 @@
 package com.milsabores.backend.controller;
 
+import com.milsabores.backend.dto.CompraRequest;
 import com.milsabores.backend.model.Compra;
 import com.milsabores.backend.service.CompraService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,9 +29,9 @@ public class CompraController {
     }
 
     @PostMapping
-    @Operation(summary =  "añadir una nueva compra")
-    public Compra saveCompra(@RequestBody Compra compra){
-        return compraService.saveCompra(compra);
+    @Operation(summary = "Registrar una nueva compra con usuario y detalles")
+    public Compra registrarCompra(@RequestBody CompraRequest request) {
+        return compraService.registrarCompra(request);
     }
 
     @PutMapping("/{id}")
