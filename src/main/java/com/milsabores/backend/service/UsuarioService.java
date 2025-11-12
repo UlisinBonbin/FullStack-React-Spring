@@ -33,6 +33,7 @@ public class UsuarioService {
         return usuarioRepository.findById(id)
                 .map(usuario -> {
                     usuario.setNombre(usuarioActualizado.getNombre());
+                    usuario.setApellido(usuarioActualizado.getApellido());
                     usuario.setCorreo(usuarioActualizado.getCorreo());
                     usuario.setContrasena(usuarioActualizado.getContrasena());
                     usuario.setDireccion(usuarioActualizado.getDireccion());
