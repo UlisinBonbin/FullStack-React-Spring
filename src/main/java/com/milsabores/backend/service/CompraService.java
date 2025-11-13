@@ -1,14 +1,9 @@
 package com.milsabores.backend.service;
 
 import com.milsabores.backend.dto.CompraRequest;
-import com.milsabores.backend.model.Compra;
-import com.milsabores.backend.model.DetalleCompra;
-import com.milsabores.backend.model.Producto;
-import com.milsabores.backend.model.Usuario;
-import com.milsabores.backend.repository.CompraRepository;
-import com.milsabores.backend.repository.DetalleCompraRepository;
-import com.milsabores.backend.repository.ProductoRepository;
-import com.milsabores.backend.repository.UsuarioRepository;
+import com.milsabores.backend.model.*;
+import com.milsabores.backend.repository.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +26,9 @@ public class CompraService {
     @Autowired
     private DetalleCompraRepository detalleCompraRepository;
 
+    @Autowired
+    private CarritoRepository carritoRepository;
+
     public List<Compra> getAllCompras() {
         return compraRepository.findAll();
     }
@@ -39,37 +37,51 @@ public class CompraService {
         return compraRepository.findById(id).orElse(null);
     }
 
-    // ✅ Nuevo método completo
+    @Transactional // Anotación clave para que toda la operación sea atómica.
     public Compra registrarCompra(CompraRequest request) {
-        // Buscar usuario
+        // A. BUSCAR EL USUARIO
         Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + request.getUsuarioId()));
 
-        // Crear la compra con la fecha actual
-        Compra compra = new Compra();
-        compra.setUsuario(usuario);
-        compra.setFechaCompra(LocalDate.now().toString());
-        compra = compraRepository.save(compra);
-
-        // Crear los detalles de la compra
-        List<DetalleCompra> detalles = new ArrayList<>();
-        for (CompraRequest.DetalleRequest d : request.getDetalles()) {
-            Producto producto = productoRepository.findById(d.getProductoId())
-                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-
-            DetalleCompra detalle = new DetalleCompra();
-            detalle.setCompra(compra);
-            detalle.setProducto(producto);
-            detalle.setCantidad(d.getCantidad());
-            detalle.setPrecioUnitario(d.getPrecioUnitario());
-            detalles.add(detalle);
+        // B. OBTENER LOS ÍTEMS DEL CARRITO DESDE LA BASE DE DATOS (¡EL GRAN CAMBIO!)
+        List<CarritoItem> itemsDelCarrito = carritoRepository.findByUsuarioId(usuario.getId());
+        if (itemsDelCarrito.isEmpty()) {
+            throw new RuntimeException("El carrito está vacío. No se puede registrar la compra.");
         }
 
-        // Guardar todos los detalles
-        detalleCompraRepository.saveAll(detalles);
-        compra.setDetalles(detalles);
+        // C. CREAR LA COMPRA PRINCIPAL Y GUARDARLA PARA OBTENER UN ID
+        Compra nuevaCompra = new Compra();
+        nuevaCompra.setUsuario(usuario);
+        nuevaCompra.setFechaCompra(LocalDate.now().toString()); // Usamos LocalDate directamente
+        nuevaCompra.setDetalles(new ArrayList<>()); // Inicializamos la lista
 
-        return compra;
+        // Guardamos la compra para que Hibernate le asigne un ID
+        Compra compraGuardada = compraRepository.save(nuevaCompra);
+
+        // D. TRANSFORMAR LOS ÍTEMS DEL CARRITO EN DETALLES DE COMPRA
+        for (CarritoItem itemCarrito : itemsDelCarrito) {
+            DetalleCompra detalle = new DetalleCompra();
+
+            // ¡LA ASOCIACIÓN CLAVE!
+            detalle.setCompra(compraGuardada);
+
+            detalle.setProducto(itemCarrito.getProducto());
+            detalle.setCantidad(itemCarrito.getCantidad());
+            // Guardamos el precio del producto en el momento de la compra
+            detalle.setPrecioUnitario(itemCarrito.getProducto().getPrecio());
+
+            // Añadimos el detalle a la lista de la compra principal
+            compraGuardada.getDetalles().add(detalle);
+        }
+
+        // E. VACIAR EL CARRITO DEL USUARIO
+        // Como el usuario ya compró, limpiamos su carrito.
+        carritoRepository.deleteByUsuarioId(usuario.getId());
+
+        // F. DEVOLVER LA COMPRA COMPLETA
+        // Gracias a @Transactional y CascadeType.ALL en la entidad Compra,
+        // los detalles se guardan automáticamente al final de la transacción.
+        return compraGuardada;
     }
 
     public Compra updateCompra(Long id, Compra compraActualizada) {
