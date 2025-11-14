@@ -22,8 +22,10 @@ public class UsuarioService {
     }
 
     public Usuario saveUsuario(Usuario usuario){
+        usuario.setRol("USER");
         return usuarioRepository.save(usuario);
     }
+
 
     public void deleteUsuario(Long id){
         usuarioRepository.deleteById(id);

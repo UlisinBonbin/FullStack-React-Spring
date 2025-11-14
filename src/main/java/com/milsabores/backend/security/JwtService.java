@@ -14,9 +14,10 @@ public class JwtService {
     private final Key secretKey = Keys.hmacShaKeyFor("MI_CLAVE_SUPER_SECRETA_QUE_DEBE_SER_MAS_LARGA123".getBytes());
 
     // Crear token
-    public String generarToken(String correo) {
+    public String generarToken(String correo, String rol) {
         return Jwts.builder()
                 .setSubject(correo)
+                .claim("role", rol)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 2)) // 2 horas
                 .signWith(secretKey, SignatureAlgorithm.HS256)

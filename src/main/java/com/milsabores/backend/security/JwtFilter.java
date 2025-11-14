@@ -19,6 +19,24 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private JwtService jwtService;
 
+    // ============================================
+    // 🔥 IGNORAR LOGIN, REGISTRO Y SWAGGER
+    // ============================================
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+
+        String path = request.getServletPath();
+
+        return path.equals("/api/v1/usuarios/login") ||
+                path.equals("/api/v1/usuarios") || // registro
+                path.startsWith("/swagger-ui") ||
+                path.startsWith("/api/v1/productos")||
+                path.startsWith("/v3/api-docs");
+    }
+
+    // ============================================
+    // 🔥 FILTRO JWT NORMAL
+    // ============================================
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -29,6 +47,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
+
             String token = authHeader.substring(7);
 
             // Validar token
@@ -40,7 +59,7 @@ public class JwtFilter extends OncePerRequestFilter {
             // Obtener correo desde token
             String correo = jwtService.getCorreoDesdeToken(token);
 
-            // 🔥 Crear objeto Authentication sin roles (por ahora)
+            // Crear Authentication (sin roles por ahora)
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
                             correo,
@@ -48,7 +67,6 @@ public class JwtFilter extends OncePerRequestFilter {
                             Collections.emptyList()
                     );
 
-            // Registrar al usuario como autenticado
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 

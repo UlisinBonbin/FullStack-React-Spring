@@ -62,7 +62,7 @@ public class UsuarioController {
 
         if (existingUser != null) {
             //Generar token
-            String token = jwtService.generarToken(existingUser.getCorreo());
+            String token = jwtService.generarToken(existingUser.getCorreo(),existingUser.getRol());
 
             //Devolver token + usuario
             return new LoginResponse(token, existingUser);

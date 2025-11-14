@@ -1,18 +1,35 @@
 package com.milsabores.backend;
 
 import com.milsabores.backend.model.Producto;
+import com.milsabores.backend.model.Usuario;
 import com.milsabores.backend.repository.ProductoRepository;
+import com.milsabores.backend.repository.UsuarioRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import java.util.List;
 
 @Configuration
 public class DataLoader {
+
     @Bean
-    CommandLineRunner initDatabase(ProductoRepository productoRepository) {
+    CommandLineRunner initDatabase(ProductoRepository productoRepository,UsuarioRepository usuarioRepository) {
         return args -> {
+
+            if (usuarioRepository.findByCorreoAndContrasena("admin@milsabores.com", "admin123").isEmpty()) {
+
+                Usuario admin = new Usuario();
+                admin.setNombre("Admin");
+                admin.setApellido("Principal");
+                admin.setCorreo("admin@milsabores.com");
+                admin.setContrasena("admin123");   // ⚠️ Luego podemos encriptarlo si quieres
+                admin.setDireccion("Local principal");
+                admin.setRol("ADMIN");
+
+                usuarioRepository.save(admin);
+
+                System.out.println("Usuario ADMIN creado automáticamente");
+            }
             if (productoRepository.count() == 0) {
                 List<Producto> iniciales = List.of(
                         //Faltan agregar, cambiar el nombre o precio para que calce con el que teniamos
