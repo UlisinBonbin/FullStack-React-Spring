@@ -1,6 +1,8 @@
 package com.milsabores.backend.controller;
 
+import com.milsabores.backend.dto.LoginResponse;
 import com.milsabores.backend.model.Usuario;
+import com.milsabores.backend.security.JwtService;
 import com.milsabores.backend.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,6 +20,9 @@ import java.util.List;
 public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private JwtService jwtService;
 
     @GetMapping
     @Operation(summary =  "Lista de los usuarios")
@@ -51,15 +56,21 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    @Operation(summary =  "Iniciar sesión de usuario")
-    public Usuario login(@RequestBody Usuario usuario) {
+    @Operation(summary = "Iniciar sesión de usuario")
+    public LoginResponse login(@RequestBody Usuario usuario) {
         Usuario existingUser = usuarioService.login(usuario.getCorreo(), usuario.getContrasena());
+
         if (existingUser != null) {
-            return existingUser;
+            //Generar token
+            String token = jwtService.generarToken(existingUser.getCorreo());
+
+            //Devolver token + usuario
+            return new LoginResponse(token, existingUser);
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Correo o contraseña incorrectos");
         }
     }
+
 
 
 }
