@@ -46,4 +46,13 @@ public class JwtService {
             return false;
         }
     }
+    public String getRolDesdeToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role", String.class);
+    }
+
 }

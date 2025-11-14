@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -30,8 +31,8 @@ public class JwtFilter extends OncePerRequestFilter {
         return path.equals("/api/v1/usuarios/login") ||
                 path.equals("/api/v1/usuarios") || // registro
                 path.startsWith("/swagger-ui") ||
-                path.startsWith("/api/v1/productos")||
-                path.startsWith("/v3/api-docs");
+                path.startsWith("/v3/api-docs")||
+                request.getMethod().equals("OPTIONS");
     }
 
     // ============================================
@@ -58,13 +59,14 @@ public class JwtFilter extends OncePerRequestFilter {
 
             // Obtener correo desde token
             String correo = jwtService.getCorreoDesdeToken(token);
+            String rol = jwtService.getRolDesdeToken(token);
 
             // Crear Authentication (sin roles por ahora)
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
                             correo,
                             null,
-                            Collections.emptyList()
+                            Collections.singleton(new SimpleGrantedAuthority("ROLE_" + rol))
                     );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);

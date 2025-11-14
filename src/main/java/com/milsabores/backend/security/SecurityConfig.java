@@ -3,6 +3,7 @@ package com.milsabores.backend.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -56,10 +57,26 @@ public class SecurityConfig {
                         // ENDPOINTS DE LOGIN Y REGISTRO
                         .requestMatchers(
                                 "/api/v1/usuarios/login",
-                                "/api/v1/usuarios",
-                                "/api/v1/productos/**",
-                                "/api/v1/compras/**"
+                                "/api/v1/usuarios"
                         ).permitAll()
+
+                        // 🛑 REGLAS DE AUTORIZACIÓN BASADA EN ROLES
+
+                        // 1. PRODUCTOS (CATÁLOGO)
+                        // Permitir a CUALQUIERA (permitAll()) hacer un GET para ver el catálogo.
+                        .requestMatchers(HttpMethod.GET, "/api/v1/productos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/compras/**").permitAll()
+
+                        // Restringir la creación, modificación y eliminación solo al ADMIN.
+                        .requestMatchers(HttpMethod.POST, "/api/v1/productos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/productos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/productos/**").hasRole("ADMIN")
+                        // 2. OTRAS REGLAS...
+                        // Ejemplo: Solo ADMIN puede eliminar usuarios
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/usuarios/**").hasRole("ADMIN")
+
+                        // Las compras requieren que el usuario esté autenticado (ya sea ADMIN o USER)
+                        .requestMatchers("/api/v1/compras/**").authenticated()
 
                         // TODO LO DEMÁS NECESITA TOKEN
                         .anyRequest().authenticated()
