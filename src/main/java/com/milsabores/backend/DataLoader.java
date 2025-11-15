@@ -16,17 +16,26 @@ public class DataLoader {
     CommandLineRunner initDatabase(ProductoRepository productoRepository,UsuarioRepository usuarioRepository) {
         return args -> {
 
-            if (usuarioRepository.findByCorreoAndContrasena("admin@milsabores.com", "admin123").isEmpty()) {
+            if (!usuarioRepository.existsByCorreo("admin@milsabores.com")) {
 
                 Usuario admin = new Usuario();
                 admin.setNombre("Admin");
                 admin.setApellido("Principal");
                 admin.setCorreo("admin@milsabores.com");
-                admin.setContrasena("admin123");   // ⚠️ Luego podemos encriptarlo si quieres
+                admin.setContrasena("admin123");
                 admin.setDireccion("Local principal");
                 admin.setRol("ADMIN");
 
+                Usuario admin2 = new Usuario();
+                admin2.setNombre("Admin");
+                admin2.setApellido("Secundario");
+                admin2.setCorreo("adminSegundo@milsabores.com");
+                admin2.setContrasena("admin1234");
+                admin2.setDireccion("Local principal");
+                admin2.setRol("ADMIN");
+
                 usuarioRepository.save(admin);
+                usuarioRepository.save(admin2);
 
                 System.out.println("Usuario ADMIN creado automáticamente");
             }
