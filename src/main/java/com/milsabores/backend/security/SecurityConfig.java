@@ -51,8 +51,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/v3/api-docs/**",
-                                "/api/v1/productos/**"
+                                "/v3/api-docs/**"
                         ).permitAll()
 
                         // ENDPOINTS DE LOGIN Y REGISTRO
@@ -64,9 +63,15 @@ public class SecurityConfig {
                         // 🛑 REGLAS DE AUTORIZACIÓN BASADA EN ROLES
 
                         // 1. PRODUCTOS (CATÁLOGO)
-                        // Permitir a CUALQUIERA (permitAll()) hacer un GET para ver el catálogo.
+                        // ✅ REGLA CRUCIAL: EL GET DE PRODUCTOS DEBE SER PÚBLICO
                         .requestMatchers(HttpMethod.GET, "/api/v1/productos/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/compras/**").permitAll()
+
+                        // 2. ENDPOINTS QUE REQUIEREN AUTENTICACIÓN (y a veces un rol)
+
+                        // Compras: Todo lo relacionado con compras requiere autenticación (ya sea GET para ver mis compras, o POST para crear una).
+                        // **NOTA:** Si tu GET /api/v1/compras/** es para el histórico personal, debe estar en 'authenticated()'.
+                        .requestMatchers("/api/v1/compras/**").authenticated()
+
 
                         // Restringir la creación, modificación y eliminación solo al ADMIN.
                         .requestMatchers(HttpMethod.POST, "/api/v1/productos/**").hasRole("ADMIN")
