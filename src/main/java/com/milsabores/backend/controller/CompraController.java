@@ -6,6 +6,7 @@ import com.milsabores.backend.service.CompraService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -23,9 +24,16 @@ public class CompraController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary =  "obtener una compra por su id")
+    @Operation(summary =  "Obtener una compra por su id")
     public Compra getCompraById(@PathVariable Long id){
         return compraService.getCompraById(id);
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    @Operation(summary = "Obtener la compra por el id del usuario")
+    public ResponseEntity<List<Compra>>findByUsuario_Id(@PathVariable Long usuarioId){
+        List<Compra> compraPorUsuario = compraService.findByUsuario_Id(usuarioId);
+        return ResponseEntity.ok(compraPorUsuario);
     }
 
     @PostMapping

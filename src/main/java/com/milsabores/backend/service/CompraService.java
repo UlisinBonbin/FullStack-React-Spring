@@ -1,6 +1,7 @@
 package com.milsabores.backend.service;
 
 import com.milsabores.backend.dto.CompraRequest;
+import com.milsabores.backend.exception.ResourceNotFoundException;
 import com.milsabores.backend.model.*;
 import com.milsabores.backend.repository.*;
 import jakarta.transaction.Transactional;
@@ -36,6 +37,14 @@ public class CompraService {
     public Compra getCompraById(Long id) {
         return compraRepository.findById(id).orElse(null);
     }
+
+
+    public List<Compra> findByUsuario_Id(Long usuarioId) {
+        usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró el usuario con id: " + usuarioId));
+        return compraRepository.findByUsuario_Id(usuarioId);
+    }
+
 
     @Transactional // Anotación clave para que toda la operación sea atómica.
     public Compra registrarCompra(CompraRequest request) {
