@@ -60,10 +60,9 @@ public class SecurityConfig {
                                 "/api/v1/usuarios"
                         ).permitAll()
 
-                        // 🛑 REGLAS DE AUTORIZACIÓN BASADA EN ROLES
-
+                        // REGLAS DE AUTORIZACIÓN BASADA EN ROLES
                         // 1. PRODUCTOS (CATÁLOGO)
-                        // ✅ REGLA CRUCIAL: EL GET DE PRODUCTOS DEBE SER PÚBLICO
+                        // REGLA CRUCIAL: EL GET DE PRODUCTOS DEBE SER PÚBLICO
                         .requestMatchers(HttpMethod.GET, "/api/v1/productos/**").permitAll()
 
                         // 2. ENDPOINTS QUE REQUIEREN AUTENTICACIÓN (y a veces un rol)
