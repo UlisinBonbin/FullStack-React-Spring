@@ -61,14 +61,13 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // REGLAS DE AUTORIZACIÓN BASADA EN ROLES
-                        // 1. PRODUCTOS (CATÁLOGO)
-                        // REGLA CRUCIAL: EL GET DE PRODUCTOS DEBE SER PÚBLICO
+                        //1. Esto permite que todos puedan hacer un get a los productos
                         .requestMatchers(HttpMethod.GET, "/api/v1/productos/**").permitAll()
 
-                        // 2. ENDPOINTS QUE REQUIEREN AUTENTICACIÓN (y a veces un rol)
+                        // 2. Endpoints que requieren auntenticacion (y a veces un rol)
 
                         // Compras: Todo lo relacionado con compras requiere autenticación (ya sea GET para ver mis compras, o POST para crear una).
-                        // **NOTA:** Si tu GET /api/v1/compras/** es para el histórico personal, debe estar en 'authenticated()'.
+
                         .requestMatchers("/api/v1/compras/**").authenticated()
 
 
@@ -76,14 +75,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/productos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/productos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/productos/**").hasRole("ADMIN")
-                        // 2. OTRAS REGLAS...
-                        // Ejemplo: Solo ADMIN puede eliminar usuarios
+
+                        // 3. Otras reglas
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/usuarios/**").hasRole("ADMIN")
 
-                        // Las compras requieren que el usuario esté autenticado (ya sea ADMIN o USER)
-                        .requestMatchers("/api/v1/compras/**").authenticated()
-
-                        // TODO LO DEMÁS NECESITA TOKEN
+                        // Todo lo demás necesita un token
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
